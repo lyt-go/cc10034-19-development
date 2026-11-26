@@ -11,12 +11,15 @@
 .
 ├── frontend/                 Vue 3 + Vite + TypeScript 前端
 │   ├── src/views/WorkbenchView.vue|tsx  全部模块共享工作台
+│   ├── src/views/BudgetCycleView.vue    周期结算页（关账/退款/旧预约领取）
 │   ├── src/data/modules.ts              18个业务模块配置
 │   ├── src/api/              统一请求封装
 │   └── vite.config.ts        dev server 配置（open: false）
 ├── backend/                  FastAPI（Python） 后端
 │   ├── app/routers/resource.py  通用查询/导出/登记/动作接口
+│   ├── app/routers/budget_cycle.py  周期结算专用接口（关账/退款/追查/领取）
 │   ├── app/services/<key>.py    每个模块独立领域逻辑
+│   ├── app/services/budget_cycle.py  账期关闭与退款归期的状态流转门面
 │   ├── app/services/base.py     共享服务骨架
 │   └── app/store.py          内存数据仓库与示例数据
 ├── .gitignore
@@ -68,6 +71,25 @@ npm run dev
 | 风险扫描 | `risk_scan` | 扫描任务 | 任务编号、扫描范围、扫描规则 |
 | 策略下发 | `deploy_policy` | 策略分发 | 分发编号、策略内容、目标节点 |
 | 异常检测 | `anomaly_detect` | 异常规则 | 规则编号、检测维度、检测算法 |
+
+### 周期结算（隐私预算扩展）
+
+工作台新增「周期结算」入口（路由 `/budget_cycle`），后端模块总数由 18 增至 23，新增五张内存表与配套接口：
+
+| 表 | key | 作用 |
+| --- | --- | --- |
+| 预算账期 | `budget_period` | 账期主表，维护额度/已用/占用/可用余额 |
+| 已执行费用 | `budget_charge` | 账期内实际扣费，关账后仍保留在原周期，可退款 |
+| 未清预约 | `budget_reservation` | 占用额度、待领取噪声配置的旧预约 |
+| 预算结算单 | `budget_settlement` | 关账时按已执行费用+未清预约生成，记录结转与关账后退款 |
+| 退款回执 | `budget_refund` | 按回执编号幂等，记录来源账期与实际入账账期 |
+
+核心规则（实现见 `backend/app/services/budget_cycle.py`）：
+
+- **关账**：`POST /api/budget-cycle/periods/{id}/close`，已执行费用保留原周期，未清预约结转到结算单并写明额度来源，未占用的结算余额不结转。
+- **退款归期**：`POST /api/budget-cycle/refunds`，退款跟随费用原账期；原账期已关闭时计入该账期结算单的关账后退款，即使退款在新窗口到达也不增加新账期余额。
+- **回执幂等**：同一回执编号重放只返回首条记录，任何账期都不会重复增加余额；`GET /api/budget-cycle/refunds/{no}/trace` 可追查额度去向。
+- **旧预约领取**：噪声引擎经 `GET /api/budget-cycle/noise-engine/reservations/{id}/check` 判断资格——开放账期看可用余额，已关闭账期看结算单结转剩余；领取后来源额度立即扣减，重复领取被拒绝。
 
 ## 约定
 

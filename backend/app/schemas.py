@@ -29,3 +29,18 @@ class EntryPayload(BaseModel):
 class ActionPayload(BaseModel):
     action: str
     remark: str | None = None
+
+
+class PeriodClosePayload(BaseModel):
+    remark: str | None = None
+
+
+class RefundPayload(BaseModel):
+    receipt_no: str
+    charge_no: str
+    amount: float = Field(gt=0)
+    arrival_period: str | None = None
+
+
+class ReservationClaimPayload(BaseModel):
+    remark: str | None = None

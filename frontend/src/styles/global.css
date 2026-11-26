@@ -70,3 +70,19 @@ body { margin: 0; background: #f6f8fb; color: #1f2937; }
 .analysis-chart { display: flex; align-items: flex-end; gap: 8px; height: 160px; padding: 12px 0; }
 .analysis-bar { flex: 1; border-radius: 4px 4px 0 0; background: var(--brand); min-width: 24px; position: relative; transition: height 0.4s; }
 .analysis-bar span { position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 10px; color: var(--muted); white-space: nowrap; }
+/* 周期结算页 */
+.cycle-section { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 16px; }
+.cycle-title { font-size: 15px; margin: 0 0 10px; padding-left: 8px; border-left: 3px solid var(--brand); }
+.muted-text { color: var(--muted); font-size: 12px; }
+.ok-text { color: #047857; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 12px; white-space: nowrap; }
+.badge-开放, .badge-可领取, .badge-已入账, .badge-已受理, .badge-已生成 { background: #dbeafe; color: #1d4ed8; }
+.badge-待关闭, .badge-待领取, .badge-部分退款, .badge-已结转 { background: #fef3c7; color: #b45309; }
+.badge-已关闭, .badge-已领取, .badge-已退款, .badge-已清零 { background: #d1fae5; color: #047857; }
+.badge-已失效, .badge-重复回执 { background: #fee2e2; color: #b42318; }
+.refund-form, .trace-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; padding: 12px; background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; }
+.refund-form label, .trace-bar label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+.refund-form input, .trace-bar input { padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; min-width: 160px; }
+.trace-result { padding: 8px 12px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 13px; }
+.eligibility-list { margin: 10px 0 0; padding-left: 20px; font-size: 13px; }
+.eligibility-list li { margin-bottom: 4px; }
